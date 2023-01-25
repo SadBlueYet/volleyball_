@@ -22,15 +22,15 @@ void teamPlacement() {
 }
 void teamTransition(int* teamOnePos, int* teamTwoPos) {
     int unitPosition;
-    for (int i = 0; i < 6; i++) {
-        unitPosition = teamOnePos[i + 1];
-        teamOnePos[i + 1] = teamOnePos[i];
-        teamOnePos[i + 2] = unitPosition;
-        if (i == 5) teamOnePos[0] = teamOnePos[i];
+    unitPosition = teamOnePos[5];
+    for (int i = 5; i >= 0 ; i--) {
+        
+        teamOnePos[i] = teamOnePos[i - 1];
+        
+        if (i == 0) teamOnePos[i] = unitPosition;
     }
     for (int i = 0; i < 6; i++) {
         std::cout << teamOnePos[i] << ' ';
         if (i == 3) std::cout << '\n';
     }
-
 }

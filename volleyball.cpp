@@ -2,12 +2,19 @@
 #include <stdlib.h>
 #include <time.h>
 #include <random>
+#include <fstream>
+#include <string>
 
 void playerActions(int* teamOne, int* teamTwo, int goal);
 void teamPlacement(int* teamOne, int* teamTwo);
 void teamTransition(int* teamPos);
 void gameScore(int *teamOne, int *teamTwo);
+void replacementOfPlayers(int* team, int* substitute, int* volleyballPlayer);
+void logsOfFile(std::string action);
+void result(int* counterOne, int* counterTwo);
+bool checkingNumbers(int* team, int* substitute);
 int randomNumber(int min, int max);
+
 int main() {
     int teamOne[6]{ 1, 5, 23, 7, 21, 8 };
     int teamTwo[6]{ 12, 4, 11, 99, 26, 5 };
@@ -16,6 +23,7 @@ int main() {
 }
 
 void gameScore(int *teamOne, int *teamTwo) {
+    std::string action;
     int counter = 0; 
     int counterTeamOne = 0; 
     int counterTeamTwo = 0;
@@ -30,13 +38,11 @@ void gameScore(int *teamOne, int *teamTwo) {
             goal = randomNumber(0,1);
             if (goal == 0) teamOneScore++;
             else if (goal == 1) teamTwoScore++;
-
-            std::cout << "\t\t\t\t" << counterTeamOne << " (" << teamOneScore << ')' << " - " <<
-                counterTeamTwo << " (" << teamTwoScore << ')' << '\t';
+            action = std::to_string(counterTeamOne) + " (" + std::to_string(teamOneScore) + ") - "
+                + std::to_string(counterTeamTwo) + " (" + std::to_string(teamTwoScore) + ")";
+            std::cout << "\t\t\t\t" << action << '\t';
+            logsOfFile(action);
             playerActions(teamOne, teamTwo, goal);
-
-            
-
 
             if (teamOneScore >= 5 && (teamOneScore - teamTwoScore >= 2)) {
                 counterTeamOne++;
@@ -63,6 +69,7 @@ void gameScore(int *teamOne, int *teamTwo) {
         counter++;
     } while (true);
     std::cout << counterTeamOne << " - " << counterTeamTwo;
+    result(&counterTeamOne, &counterTeamTwo);
 }
 void teamPlacement(int* teamOne, int* teamTwo) {
     for (int i = 0; i < 6; i++) {
@@ -96,21 +103,131 @@ int randomNumber(int min, int max) {
 }
 void playerActions(int* teamOne, int* teamTwo, int goal) {
     int action = randomNumber(1, 5);
+    std::string step;
+    int volleyballPlayer, substitute;
     if (action == 1) {
-        if (goal == 1) std::cout << "2" << " - " << "A - " << teamTwo[randomNumber(0, 5)] << '\n';
-        else std::cout << "1" << " - " << "A - " << teamOne[randomNumber(0, 5)] << '\n';
+        if (goal == 1) {
+            step = "2 - A - ";
+            step += std::to_string(teamTwo[randomNumber(0, 5)]);
+            std::cout << step << '\n' << '\n';
+            logsOfFile(step);
+        }
+        else {
+            step = "1 - A - ";
+            step += std::to_string(teamOne[randomNumber(0, 5)]);
+            std::cout << step << '\n' << '\n';
+            logsOfFile(step);
+        }
     }
     else if (action == 2) {
-        if (goal == 1) std::cout << "2" << " - " << "B - " << teamTwo[randomNumber(0, 5)] << '\n';
-        else std::cout << "1" << " - " << "B - " << teamOne[randomNumber(0, 5)] << '\n';
+        if (goal == 1) {
+            step = "2 - B - ";
+            step += std::to_string(teamTwo[randomNumber(0, 5)]);
+            std::cout << step << '\n' << '\n';
+            logsOfFile(step);
+        }
+        else {
+            step = "1 - B - ";
+            step += std::to_string(teamOne[randomNumber(0, 5)]);
+            std::cout << step << '\n' << '\n';
+            logsOfFile(step);
+        }
     }
     else if (action == 3) {
-        if (goal == 1) std::cout  << "2" << " - " << "S - " << teamTwo[randomNumber(0, 5)] << '\n';
-        else std::cout << "1" << " - " << "S - " << teamOne[randomNumber(0, 5)] << '\n';
+        if (goal == 1) {
+            step = "2 - S - ";
+            step += std::to_string(teamTwo[randomNumber(0, 5)]);
+            std::cout << step << '\n' << '\n';
+            logsOfFile(step);
+        }
+        else {
+            step = "1 - S - ";
+            step += std::to_string(teamOne[randomNumber(0, 5)]);
+            std::cout << step << '\n' << '\n';
+            logsOfFile(step);
+        }
     }
     else if (action == 4) {
-        if (goal == 1) std::cout << "2" << " - " << "F" << '\n';
-        else std::cout << "1" << " - " << "F" << '\n';
+        if (goal == 1) {
+            step = "2 - F";
+            std::cout << step << '\n' << '\n';
+            logsOfFile(step);
+        }
+        else {
+            step = "1 - F";
+            std::cout << step << '\n' << '\n';
+            logsOfFile(step);
+        }
     }
+    else if (action == 5) {
+        if (randomNumber(1, 2) == 1) {
+            do {
+                volleyballPlayer = teamOne[randomNumber(0, 5)];
+                substitute = randomNumber(1, 99);
+                if (checkingNumbers(teamOne, &substitute) == true) {
+                    replacementOfPlayers(teamOne, &substitute, &volleyballPlayer);
+                    step = "1 - R(";
+                    step += (std::to_string(substitute) + (char)26);
+                    step += (std::to_string(volleyballPlayer) + ")");
+                    std::cout <<step << '\n' << '\n';
+                    logsOfFile(step);
+                    teamPlacement(teamOne, teamTwo);
+                    break;
+                }
+            } while (true);
+        }
+        else if (randomNumber(1, 2) == 2) {
+            do {
+                volleyballPlayer = teamTwo[randomNumber(0, 5)];
+                substitute = randomNumber(1, 99);
+                if (checkingNumbers(teamTwo, &substitute) == true) {
+                    replacementOfPlayers(teamTwo, &substitute, &volleyballPlayer);
+                    step = "2 - R(";
+                    step += (std::to_string(substitute) + (char)26);
+                    step += (std::to_string(volleyballPlayer) + ")");
+                    std::cout << step << '\n' << '\n';
+                    logsOfFile(step);
+                    teamPlacement(teamOne, teamTwo);
+                    break;
+                }
+            } while (true); 
+        }
+    }
+}
+bool checkingNumbers(int* team, int* substitute) {
+    int counter = 0;
+    for (int i = 0; i <= 5; i++) {
+        if (team[i] == *substitute) counter++;
+    }
+    if (counter == 0) return true;
+    else return false;
+}
+void replacementOfPlayers(int* team, int* substitute, int* volleyballPlayer) {
+    for (int i = 0; i < 6; i++) {
+        if (team[i] == *volleyballPlayer) team[i] = *substitute;
+    }
+}
+void logsOfFile(std::string action) {
+    std::ofstream logs;
     
+    try { 
+       logs.open("logs.txt", std::ofstream::app);
+       logs << action << "\n\n";
+       logs.close();
+    }
+    catch(std::string error) {
+        std::cerr << "Critical ERROR!";
+    }
+}
+void result(int* counterOne, int* counterTwo) {
+    std::ofstream db;
+
+    try {
+        db.open("db.txt", std::ofstream::app);
+        db << *counterOne << " - " << *counterTwo << "\n\n";
+        db.close();
+    }
+    catch (std::string error) {
+        std::cerr << "Critical ERROR!";
+    }
 }
